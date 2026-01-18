@@ -1,4 +1,5 @@
 import asyncio
+import os
 from aiogram import Bot, Dispatcher
 from config import BOT_TOKEN
 from handlers import setup_handlers
@@ -26,8 +27,16 @@ async def main():
     await on_startup()
 
     try:
-        log.info("Бот запущен")
-        await dp.start_polling(bot)
+        if os.getenv("RENDER"):
+            from healthcheck_server import run_healthcheck
+            log.info("Запуск healthcheck сервера для Render")
+            await asyncio.gather(
+                dp.start_polling(bot),
+                run_healthcheck()
+            )
+        else:
+            log.info("Бот запущен")
+            await dp.start_polling(bot)
     finally:
         await on_shutdown()
 
