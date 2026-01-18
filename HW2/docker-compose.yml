@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hw2_track_db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: HW2_track
+      POSTGRES_USER: hw2_admin
+      POSTGRES_PASSWORD: nimda
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - hw2_track_network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hw2_admin -d HW2_track"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build: .
+    container_name: hw2_track_bot
+    restart: unless-stopped
+
+    environment:
+      DATABASE_URL: postgresql://hw2_admin:nimda@postgres:5432/HW2_track
+      BOT_TOKEN: ${BOT_TOKEN}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      API_NINJAS_KEY: ${API_NINJAS_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - hw2_track_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  hw2_track_network:
+    driver: bridge
