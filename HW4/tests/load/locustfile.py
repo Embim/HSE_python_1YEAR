@@ -1,13 +1,6 @@
-"""
-Нагрузочное тестирование URL Shortener.
+# Запуск:
+#     locust -f tests/load/locustfile.py --host=http://localhost:8000
 
-Запуск:
-    locust -f tests/load/locustfile.py --host=http://localhost:8000
-
-Или без UI:
-    locust -f tests/load/locustfile.py --host=http://localhost:8000 \
-        --headless -u 50 -r 5 --run-time 60s
-"""
 import random
 import string
 from locust import HttpUser, between, task
