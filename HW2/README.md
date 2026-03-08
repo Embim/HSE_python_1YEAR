@@ -31,23 +31,23 @@ Clean layered architecture:
 
 ### Setup Environment
 
-```bash
+'''bash
 cp .env.example .env
-```
+'''
 
-Edit `.env`:
-```
+Edit '.env':
+'''
 BOT_TOKEN=<telegram_token>
 OPENWEATHER_API_KEY=<key>
 OPENROUTER_API_KEY=<key>
 DATABASE_URL=postgresql://hw2_admin:nimda@localhost:5432/HW2_track
-```
+'''
 
 ### Run Everything (Bot + Database)
 
-```bash
+'''bash
 docker-compose up -d
-```
+'''
 
 This starts:
 - PostgreSQL database on port 5432
@@ -56,10 +56,10 @@ This starts:
 
 ### Run Only Database (for local development)
 
-```bash
+'''bash
 docker-compose up -d postgres
 python bot.py
-```
+'''
 
 **Database Connection:**
 - Host: localhost:5432
@@ -69,69 +69,69 @@ python bot.py
 
 ## Commands
 
-- `/start` - start
-- `/set_profile` - setup profile
-- `/log_water <ml>` - log water
-- `/log_food` - log food (FSM)
-- `/log_workout` - log workout (FSM)
-- `/check_progress` - daily progress
-- `/graphs` - 7-day chart
-- `/recommend` - personalized tips
+- '/start' - start
+- '/set_profile' - setup profile
+- '/log_water <ml>' - log water
+- '/log_food' - log food (FSM)
+- '/log_workout' - log workout (FSM)
+- '/check_progress' - daily progress
+- '/graphs' - 7-day chart
+- '/recommend' - personalized tips
 
 ## Database Schema
 
-- `users` - user profiles
-- `daily_logs` - daily aggregates
-- `water_logs` - water entries
-- `food_logs` - food entries
-- `workout_logs` - workout entries
+- 'users' - user profiles
+- 'daily_logs' - daily aggregates
+- 'water_logs' - water entries
+- 'food_logs' - food entries
+- 'workout_logs' - workout entries
 
 ## Docker
 
 ### Start All Services
-```bash
+'''bash
 docker-compose up -d
-```
+'''
 
 ### Start Only Database
-```bash
+'''bash
 docker-compose up -d postgres
-```
+'''
 
 ### Stop
-```bash
+'''bash
 docker-compose down
-```
+'''
 
 ### Rebuild Bot
-```bash
+'''bash
 docker-compose up -d --build bot
-```
+'''
 
 ### View Logs
-```bash
+'''bash
 docker-compose logs -f bot
 docker-compose logs -f postgres
-```
+'''
 
 ### Backup
-```bash
+'''bash
 docker exec hw2_track_db pg_dump -U hw2_admin HW2_track > backup.sql
-```
+'''
 
 ### Restore
-```bash
+'''bash
 docker exec -i hw2_track_db psql -U hw2_admin HW2_track < backup.sql
-```
+'''
 
 ### psql Access
-```bash
+'''bash
 docker exec -it hw2_track_db psql -U hw2_admin -d HW2_track
-```
+'''
 
 ## Project Structure
 
-```
+'''
 HW2/
   bot.py                      - entry point
   config.py                   - configuration and constants
@@ -170,13 +170,13 @@ HW2/
     docker-compose.yml        - PostgreSQL + Bot services
     Dockerfile                - bot container image
     .env.example              - environment template
-```
+'''
 
 ## Architecture Details
 
 ### Request Flow
 
-```
+'''
 User Message
     ↓
 Handler (thin)
@@ -186,43 +186,43 @@ Service (business logic)
 Repository (data access)
     ↓
 Database (PostgreSQL)
-```
+'''
 
 ### Layer Responsibilities
 
-**Handlers** (`handlers.py`)
+**Handlers** ('handlers.py')
 - Extract user_id from event
 - Call service methods
 - Format response with Formatters
 - Send message to user
 - No business logic, calculations, or DB access
 
-**Services** (`services/`)
+**Services** ('services/')
 - Coordinate business operations
 - Call repositories for data
 - Call external APIs
 - Apply business rules
 - Return structured data
 
-**Repositories** (`repositories/`)
+**Repositories** ('repositories/')
 - Database CRUD operations
 - Return DTOs (not dicts)
 - Manage transactions
 - No business logic
 
-**Formatters** (`formatters.py`)
+**Formatters** ('formatters.py')
 - Construct user-facing messages
 - Single source of truth for text
 - No logic, just formatting
 
-**DTOs** (`dto.py`)
+**DTOs** ('dto.py')
 - Type-safe data containers
 - dataclass-based
 - Used for data transfer between layers
 
 ### Configuration
 
-All constants, thresholds, and data extracted to `config.py`:
+All constants, thresholds, and data extracted to 'config.py':
 - API keys and URLs
 - Calculation constants
 - Recommendation thresholds
@@ -231,7 +231,7 @@ All constants, thresholds, and data extracted to `config.py`:
 
 ### Logging
 
-Centralized logging via `logger.py`:
+Centralized logging via 'logger.py':
 - All print() statements removed
 - Structured logging with levels (INFO, WARNING, ERROR)
 - Consistent format across all modules
