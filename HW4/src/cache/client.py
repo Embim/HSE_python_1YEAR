@@ -8,8 +8,16 @@ redis_client: aioredis.Redis | None = None
 
 async def init_redis():
     global redis_client
-    redis_client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
-    api_logger.info("Redis connected: %s", settings.REDIS_URL)
+    if not settings.REDIS_URL:
+        api_logger.warning("REDIS_URL not set — cache disabled")
+        return
+    try:
+        client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
+        await client.ping()
+        redis_client = client
+        api_logger.info("Redis connected: %s", settings.REDIS_URL)
+    except Exception as e:
+        api_logger.warning("Redis unavailable (%s) — cache disabled", e)
 
 
 async def close_redis():
